@@ -101,6 +101,8 @@ static NSObject<FlutterPluginRegistrar> *_registrar;
                               getNotificationSettingsWithCompletionHandler:^(
                                   UNNotificationSettings *_Nonnull settings) {
                                 NSDictionary *settingsDictionary = @{
+                                  @"hasPermission" : [NSNumber numberWithBool:settings.authorizationStatus ==
+                                                                      UNAuthorizationStatusAuthorized],
                                   @"sound" : [NSNumber numberWithBool:settings.soundSetting ==
                                                                       UNNotificationSettingEnabled],
                                   @"badge" : [NSNumber numberWithBool:settings.badgeSetting ==

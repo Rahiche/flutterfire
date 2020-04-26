@@ -206,6 +206,7 @@ class FirebaseMessaging {
 
 class IosNotificationSettings {
   const IosNotificationSettings({
+    this.hasPermission = true,
     this.sound = true,
     this.alert = true,
     this.badge = true,
@@ -213,11 +214,13 @@ class IosNotificationSettings {
   });
 
   IosNotificationSettings._fromMap(Map<String, bool> settings)
-      : sound = settings['sound'],
+      : hasPermission = settings['hasPermission'],
+        sound = settings['sound'],
         alert = settings['alert'],
         badge = settings['badge'],
         provisional = settings['provisional'];
 
+  final bool hasPermission;
   final bool sound;
   final bool alert;
   final bool badge;
@@ -226,6 +229,7 @@ class IosNotificationSettings {
   @visibleForTesting
   Map<String, dynamic> toMap() {
     return <String, bool>{
+      'hasPermission': hasPermission,
       'sound': sound,
       'alert': alert,
       'badge': badge,

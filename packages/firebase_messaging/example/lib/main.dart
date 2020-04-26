@@ -173,6 +173,16 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Push Messaging Demo'),
+          actions: [
+            FlatButton(
+              child: const Text('HasPermission'),
+              onPressed: () async {
+                final a = await _firebaseMessaging.onIosSettingsRegistered.last;
+                print('a.hasPermission');
+                print(a.hasPermission);
+              },
+            )
+          ],
         ),
         // For testing -- simulate a message being received
         floatingActionButton: FloatingActionButton(
