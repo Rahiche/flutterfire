@@ -78,6 +78,10 @@ static NSObject<FlutterPluginRegistrar> *_registrar;
       if ([arguments[@"badge"] boolValue]) {
         authOptions |= UNAuthorizationOptionBadge;
       }
+          if ([arguments[@"hasPermission"] boolValue]) {
+        authOptions |= UNAuthorizationOptionBadge;
+      }
+
 
       NSNumber *isAtLeastVersion12;
       if (@available(iOS 12, *)) {
