@@ -152,20 +152,20 @@ class _PushMessagingExampleState extends State<PushMessagingExample> {
         _navigateToItemDetail(message);
       },
     );
-    _firebaseMessaging.requestNotificationPermissions(
-        const IosNotificationSettings(
-            sound: true, badge: true, alert: true, provisional: true));
+//    _firebaseMessaging.requestNotificationPermissions(
+//        const IosNotificationSettings(
+//            sound: true, badge: true, alert: true, provisional: true));
     _firebaseMessaging.onIosSettingsRegistered
         .listen((IosNotificationSettings settings) {
       print("Settings registered: $settings");
     });
-    _firebaseMessaging.getToken().then((String token) {
-      assert(token != null);
-      setState(() {
-        _homeScreenText = "Push Messaging token: $token";
-      });
-      print(_homeScreenText);
-    });
+//    _firebaseMessaging.getToken().then((String token) {
+//      assert(token != null);
+//      setState(() {
+//        _homeScreenText = "Push Messaging token: $token";
+//      });
+//      print(_homeScreenText);
+//    });
   }
 
   @override

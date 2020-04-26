@@ -132,6 +132,10 @@ static NSObject<FlutterPluginRegistrar> *_registrar;
         notificationTypes |= UIUserNotificationTypeBadge;
       }
 
+      if ([arguments[@"hasPermission"] boolValue]) {
+        notificationTypes |= UIUserNotificationTypeBadge;
+      }
+
       UIUserNotificationSettings *settings =
           [UIUserNotificationSettings settingsForTypes:notificationTypes categories:nil];
       [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
@@ -296,6 +300,7 @@ static NSObject<FlutterPluginRegistrar> *_registrar;
     @"badge" : [NSNumber numberWithBool:notificationSettings.types & UIUserNotificationTypeBadge],
     @"alert" : [NSNumber numberWithBool:notificationSettings.types & UIUserNotificationTypeAlert],
     @"provisional" : [NSNumber numberWithBool:NO],
+    @"hasPermission" : [NSNumber numberWithBool:NO],
   };
   [_channel invokeMethod:@"onIosSettingsRegistered" arguments:settingsDictionary];
 }
