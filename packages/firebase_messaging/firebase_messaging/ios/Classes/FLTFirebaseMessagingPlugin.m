@@ -237,7 +237,9 @@ NSString *const kMessagingPresentationOptionsUserDefaults =
           [[GULApplication sharedApplication].delegate
               conformsToProtocol:@protocol(UNUserNotificationCenterDelegate)]) {
         // Note this one only executes if Firebase swizzling is **enabled**.
-        shouldReplaceDelegate = NO;
+        if ([GULAppDelegateSwizzler isAppDelegateProxyEnabled]) {
+            shouldReplaceDelegate = NO;
+        }
       }
 #endif
 
