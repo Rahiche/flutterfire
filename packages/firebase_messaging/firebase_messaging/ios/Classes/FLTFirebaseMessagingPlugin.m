@@ -222,6 +222,7 @@ NSString *const kMessagingPresentationOptionsUserDefaults =
   // Set UNUserNotificationCenter but preserve original delegate if necessary.
   if (@available(iOS 10.0, macOS 10.14, *)) {
     BOOL shouldReplaceDelegate = YES;
+      NSLog(@"::::shouldReplaceDelegate::::");
     UNUserNotificationCenter *notificationCenter =
         [UNUserNotificationCenter currentNotificationCenter];
 
@@ -233,14 +234,12 @@ NSString *const kMessagingPresentationOptionsUserDefaults =
       // replace it, it will cause a stack overflow as our original delegate forwarding handler
       // below causes an infinite loop of forwarding. See
       // https://github.com/FirebaseExtended/flutterfire/issues/4026.
-      if ([GULApplication sharedApplication].delegate != nil &&
-          [[GULApplication sharedApplication].delegate
-              conformsToProtocol:@protocol(UNUserNotificationCenterDelegate)]) {
-        // Note this one only executes if Firebase swizzling is **enabled**.
-        if ([GULAppDelegateSwizzler isAppDelegateProxyEnabled]) {
-            shouldReplaceDelegate = NO;
+        NSLog(@"sharedApplication %@", [GULApplication sharedApplication].delegate);
+        NSLog(@"sharedApplication.isProxy %@", [GULApplication sharedApplication].delegate.isProxy);
+        NSLog(@"sharedApplication.description %@", [GULApplication sharedApplication].delegate.description);
+        NSLog(@"sharedApplication.debugDescription %@", [GULApplication sharedApplication].delegate.debugDescription);
+ 
         }
-      }
 #endif
 
       if (shouldReplaceDelegate) {
@@ -294,9 +293,7 @@ NSString *const kMessagingPresentationOptionsUserDefaults =
 
     // Don't send an event if contentAvailable is true - application:didReceiveRemoteNotification
     // will send the event for us, we don't want to duplicate them.
-    if (!notificationDict[@"contentAvailable"]) {
       [_channel invokeMethod:@"Messaging#onMessage" arguments:notificationDict];
-    }
   }
 
   // Forward on to any other delegates amd allow them to control presentation behavior.
@@ -329,16 +326,16 @@ NSString *const kMessagingPresentationOptionsUserDefaults =
     didReceiveNotificationResponse:(UNNotificationResponse *)response
              withCompletionHandler:(void (^)(void))completionHandler
     API_AVAILABLE(macos(10.14), ios(10.0)) {
+    NSLog(@"__didReceiveNotificationResponse__");
+
   NSDictionary *remoteNotification = response.notification.request.content.userInfo;
   // We only want to handle FCM notifications.
-  if (remoteNotification[@"gcm.message_id"]) {
     NSDictionary *notificationDict =
         [FLTFirebaseMessagingPlugin remoteMessageUserInfoToDict:remoteNotification];
     [_channel invokeMethod:@"Messaging#onMessageOpenedApp" arguments:notificationDict];
     @synchronized(self) {
       _initialNotification = notificationDict;
     }
-  }
 
   // Forward on to any other delegates.
   if (_originalNotificationCenterDelegate != nil &&
@@ -405,15 +402,11 @@ NSString *const kMessagingPresentationOptionsUserDefaults =
 - (void)application:(NSApplication *)application
     didReceiveRemoteNotification:(NSDictionary *)userInfo {
   // Only handle notifications from FCM.
+    NSLog(@"HELLO");
   if (userInfo[@"gcm.message_id"]) {
     NSDictionary *notificationDict =
         [FLTFirebaseMessagingPlugin remoteMessageUserInfoToDict:userInfo];
-
-    if ([NSApplication sharedApplication].isActive) {
       [_channel invokeMethod:@"Messaging#onMessage" arguments:notificationDict];
-    } else {
-      [_channel invokeMethod:@"Messaging#onBackgroundMessage" arguments:notificationDict];
-    }
   }
 }
 #endif
@@ -422,6 +415,7 @@ NSString *const kMessagingPresentationOptionsUserDefaults =
 - (BOOL)application:(UIApplication *)application
     didReceiveRemoteNotification:(NSDictionary *)userInfo
           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+NSLog(@"HELLO_2");
 #if __has_include(<FirebaseAuth/FirebaseAuth.h>)
   if ([[FIRAuth auth] canHandleNotification:userInfo]) {
     completionHandler(UIBackgroundFetchResultNoData);
@@ -431,10 +425,12 @@ NSString *const kMessagingPresentationOptionsUserDefaults =
 
   // Only handle notifications from FCM.
   if (userInfo[@"gcm.message_id"]) {
+    NSLog(@"HELLO_3");
     NSDictionary *notificationDict =
         [FLTFirebaseMessagingPlugin remoteMessageUserInfoToDict:userInfo];
 
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+     NSLog(@"HELLO_6");
       __block BOOL completed = NO;
 
       // If app is in background state, register background task to guarantee async queues aren't
@@ -482,12 +478,16 @@ NSString *const kMessagingPresentationOptionsUserDefaults =
                         }
                       }];
     } else {
+      NSLog(@"HELLO_5");
       [_channel invokeMethod:@"Messaging#onMessage" arguments:notificationDict];
       completionHandler(UIBackgroundFetchResultNoData);
     }
+      NSLog(@"HELLO_4");
 
     return YES;
   }  // if (userInfo[@"gcm.message_id"])
+      NSLog(@"HELLO_3");
+
   return NO;
 }  // didReceiveRemoteNotification
 #endif
